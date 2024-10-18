@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-producer
+  labels:
+    app: notification-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-producer
+  template:
+    metadata:
+      labels:
+        app: notification-producer
+    spec:
+      containers:
+        - name: notification-producer-container
+          image: adamviktora/notification-producer:latest
+          env:
+            - name: KAFKA_USERNAME
+              value: 'user1'
+            - name: KAFKA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-user-passwords
+                  key: client-passwords
