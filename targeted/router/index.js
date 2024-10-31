@@ -31,6 +31,10 @@ const producer = kafka.producer({
 });
 await producer.connect();
 
+const redisKeys = await redisReplicas.keys('*');
+console.log('redisKeys');
+console.log(redisKeys);
+
 await consumer.run({
   eachMessage: async ({ topic, partition, message }) => {
     console.log(`topic: ${topic}, partition: ${partition}`);
@@ -41,12 +45,16 @@ await consumer.run({
     // TODO: there may be a list of podNames in case when user is logged in on more devices / browser tabs
 
     if (podName) {
+      console.log(
+        `sending notification for user: ${userId} to pod: ${podName}`
+      );
       await producer.send({
         topic: `notification-${podName}`,
         messages: [message],
       });
     } else {
       // TODO: how to handle such cases? We can't just ignore the message
+      // --> send it to some general topic which will be picked up after user connects?
       console.log(`User ${userId} is not yet connected on a WS server`);
     }
   },
