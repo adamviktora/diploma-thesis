@@ -1,11 +1,12 @@
 import { Kafka } from 'kafkajs';
 import { createNotification } from './notificationGenerator.js';
 import { getRandomInt } from './utils.js';
+import { listTopics } from './kafka_helper.js';
 
 const kafkaUsername = process.env.KAFKA_USERNAME;
 const kafkaPassword = process.env.KAFKA_PASSWORD;
 const routerReplicasCount = 3;
-const senderCadencyInSeconds = 1;
+const senderCadencyInSeconds = 8;
 
 const kafka = new Kafka({
   clientId: 'producer',
@@ -18,42 +19,7 @@ const kafka = new Kafka({
   },
 });
 
-const printInfo = async (topicName) => {
-  const admin = kafka.admin();
-  await admin.connect();
-
-  const metadata = await admin.fetchTopicMetadata({ topics: [topicName] });
-
-  console.log(metadata);
-  console.log(metadata.topics[0].partitions);
-
-  await admin.disconnect();
-};
-
-const createTopic = async (topicName) => {
-  const admin = kafka.admin();
-  await admin.connect();
-
-  const topicsToCreate = [
-    {
-      topic: topicName,
-      numPartitions: 3,
-      replicationFactor: 1,
-    },
-  ];
-
-  const result = await admin.createTopics({
-    topics: topicsToCreate,
-  });
-
-  if (result) {
-    console.log(`Topic ${topicName} created successfully`);
-  } else {
-    console.log(`Topic ${topicName} already exists`);
-  }
-
-  await admin.disconnect();
-};
+await listTopics(kafka);
 
 //await createTopic('notification');
 //await printInfo('notification');

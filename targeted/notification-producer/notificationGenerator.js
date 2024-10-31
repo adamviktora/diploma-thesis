@@ -1,11 +1,13 @@
 import { pickRandom } from './utils.js';
 
-const userIdList = ['userA', 'userB', 'userC', 'userD'];
+const USERS_COUNT = 10;
+
+const userIdList = [...Array(USERS_COUNT).keys()].map((i) => `user${i}`);
 const messages = [
   'Hello!',
-  'Random notification message',
-  'Some alert text',
-  'Please pay for your subscription',
+  'Some notification',
+  'Good morning!',
+  'Hey hey hey',
 ];
 
 export const createNotification = () => {
