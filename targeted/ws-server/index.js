@@ -13,6 +13,8 @@ const redisMaster = new Redis({
   password: process.env.REDIS_PASSWORD,
 });
 
+//redisMaster.del('userA', 'userB', 'userC', 'userD', '1');
+
 wss.on('connection', (socket) => {
   socket.on('message', async (message) => {
     const incomingObject = JSON.parse(message);
@@ -20,6 +22,8 @@ wss.on('connection', (socket) => {
     if (incomingObject.type === 'USER_CONNECTION') {
       const userId = incomingObject.userId;
       wsConnections.set(userId, socket);
+      // TODO: multiple connections for one user (more browser tabs / devices)
+
       socket.send(
         `User ${userId} succesfully connected on the server, pod name: "${
           podName ?? 'locally-now'
@@ -28,7 +32,19 @@ wss.on('connection', (socket) => {
 
       console.log(`users connected: ${Array.from(wsConnections.keys())}`);
 
-      await redisMaster.set(userId, podName);
+      await redisMaster.sadd(`userPods:${userId}`, podName);
+    }
+  });
+
+  socket.on('close', async () => {
+    const userId = Array.from(wsConnections.entries()).find(
+      ([_id, ws]) => ws === socket
+    )?.[0];
+    if (userId) {
+      wsConnections.delete(userId);
+      console.log(`WebSocket connection closed for user ${userId}`);
+
+      redisMaster.srem(`userPods:${userId}`, podName);
     }
   });
 });
