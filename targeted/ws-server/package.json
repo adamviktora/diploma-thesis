@@ -2,9 +2,11 @@
   "name": "ws-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node ."
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "dev": "ts-node src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -14,5 +16,12 @@
     "ioredis": "^5.4.1",
     "kafkajs": "^2.2.4",
     "ws": "^8.14.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.0.0",
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.5.5",
+    "@types/ioredis": "^4.28.7"
   }
 }
