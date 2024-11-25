@@ -1,4 +1,6 @@
-export const printInfo = async (kafka, topicName) => {
+import { ITopicConfig, Kafka } from 'kafkajs';
+
+export const printTopicInfo = async (kafka: Kafka, topicName: string) => {
   const admin = kafka.admin();
   await admin.connect();
 
@@ -10,11 +12,11 @@ export const printInfo = async (kafka, topicName) => {
   await admin.disconnect();
 };
 
-export const createTopic = async (kafka, topicName) => {
+export const createTopic = async (kafka: Kafka, topicName: string) => {
   const admin = kafka.admin();
   await admin.connect();
 
-  const topicsToCreate = [
+  const topicsToCreate: ITopicConfig[] = [
     {
       topic: topicName,
       numPartitions: 3,
@@ -22,11 +24,11 @@ export const createTopic = async (kafka, topicName) => {
     },
   ];
 
-  const result = await admin.createTopics({
+  const topicsCreated = await admin.createTopics({
     topics: topicsToCreate,
   });
 
-  if (result) {
+  if (topicsCreated) {
     console.log(`Topic ${topicName} created successfully`);
   } else {
     console.log(`Topic ${topicName} already exists`);
@@ -35,7 +37,7 @@ export const createTopic = async (kafka, topicName) => {
   await admin.disconnect();
 };
 
-export const listTopics = async (kafka) => {
+export const printTopicsList = async (kafka: Kafka) => {
   const admin = kafka.admin();
   await admin.connect();
 
