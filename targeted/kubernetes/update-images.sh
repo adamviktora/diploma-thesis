@@ -8,6 +8,7 @@ cd "$parent_path"
 services=("router" "ws-server" "notification-producer")
 
 for service in "${services[@]}"; do
+  echo "Building $service image"
   docker build -t "adamviktora/$service" "../$service"
   docker push "adamviktora/$service"
 done

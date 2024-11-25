@@ -1,12 +1,14 @@
 import { WebSocket, WebSocketServer } from 'ws';
-
-import { kafka } from './kafkaSetup.js';
+import {
+  kafka,
+  PerPodPartitionAssigner,
+  POD_NAME,
+  POD_NUMBER,
+} from './kafkaSetup.js';
 import { redisMaster } from './redisSetup.js';
 
 const wss = new WebSocketServer({ port: 3000 });
 const wsConnections = new Map<string, Set<WebSocket>>();
-
-const POD_NAME = process.env.POD_NAME ?? 'local_pod_name';
 
 wss.on('connection', (socket) => {
   socket.on('message', async (message) => {
@@ -28,7 +30,7 @@ wss.on('connection', (socket) => {
 
       console.log(`users connected: ${Array.from(wsConnections.keys())}`);
 
-      await redisMaster.sadd(`userPods:${userId}`, POD_NAME);
+      await redisMaster.sadd(`userPodNums:${userId}`, POD_NUMBER);
     }
   });
 
@@ -36,9 +38,11 @@ wss.on('connection', (socket) => {
     for (const [userId, sockets] of wsConnections.entries()) {
       if (sockets.has(socket)) {
         sockets.delete(socket);
+        console.log(`User ${userId} disconnected from the WS server`);
+
         if (sockets.size === 0) {
           wsConnections.delete(userId);
-          redisMaster.srem(`userPods:${userId}`, POD_NAME);
+          redisMaster.srem(`userPodNums:${userId}`, POD_NUMBER);
         } else {
           wsConnections.set(userId, sockets);
         }
@@ -49,12 +53,20 @@ wss.on('connection', (socket) => {
 });
 
 // KAFKA
-const consumer = kafka.consumer({ groupId: `${POD_NAME}` });
+const consumer = kafka.consumer({
+  groupId: `ws-server-notifications-consumer`,
+  partitionAssigners: [PerPodPartitionAssigner],
+});
+
 await consumer.connect();
 await consumer.subscribe({
-  topic: `notification-${POD_NAME}`,
+  topic: `notification-partitioned`,
   fromBeginning: true,
 });
+
+const data = await consumer.describeGroup();
+console.log('CONSUMER-GROUP');
+console.log(data);
 
 await consumer.run({
   eachMessage: async ({ topic, partition, message: kafkaMessage }) => {
