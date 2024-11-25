@@ -1,6 +1,6 @@
 import { pickRandom } from './utils.js';
 
-const USERS_COUNT = 10;
+export const USERS_COUNT = 1000;
 
 const userIdList = [...Array(USERS_COUNT).keys()].map((i) => `user${i}`);
 const messages = [

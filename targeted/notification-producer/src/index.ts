@@ -1,10 +1,12 @@
 import { kafka } from './kafkaSetup.js';
-import { createNotification } from './notificationGenerator.js';
+import { createNotification, USERS_COUNT } from './notificationGenerator.js';
 import { getRandomInt } from './utils.js';
 import { printTopicsList } from './kafkaHelper.js';
 
 const routerReplicasCount = 3;
-const senderCadencyInSeconds = 0.5;
+
+const cadencyPerUserInSeconds = 60;
+const intervalInSeconds = cadencyPerUserInSeconds / USERS_COUNT;
 
 await printTopicsList(kafka);
 
@@ -25,6 +27,6 @@ setInterval(async () => {
       },
     ],
   });
-}, senderCadencyInSeconds * 1000);
+}, intervalInSeconds * 1000);
 
 //await producer.disconnect();

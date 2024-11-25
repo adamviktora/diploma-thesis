@@ -1,11 +1,5 @@
 import { kafka } from './kafkaSetup.js';
-import { getRedisKeys, redisReplicas } from './redisSetup.js';
-
-const keys = await getRedisKeys();
-console.log('Redis:');
-for (const key of keys) {
-  console.log(key);
-}
+import { redisReplicas } from './redisSetup.js';
 
 const consumer = kafka.consumer({ groupId: 'router-group' });
 await consumer.connect();
