@@ -1,4 +1,4 @@
-const socket = new WebSocket('ws://localhost:63006/');
+const socket = new WebSocket('ws://localhost:65288/');
 
 function sendMessage(e) {
   e.preventDefault();
