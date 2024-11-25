@@ -1,13 +1,10 @@
 import { kafka } from './kafkaSetup.js';
 import { getRedisKeys, redisReplicas } from './redisSetup.js';
 
-const keys = (await getRedisKeys()).filter((key) =>
-  key.startsWith('userPods:')
-);
+const keys = await getRedisKeys();
 console.log('Redis:');
 for (const key of keys) {
   console.log(key);
-  console.log(await redisReplicas.smembers(key));
 }
 
 const consumer = kafka.consumer({ groupId: 'router-group' });
@@ -25,28 +22,28 @@ console.log(data);
 
 await consumer.run({
   eachMessage: async ({ topic, partition, message }) => {
-    console.log(`topic: ${topic}, partition: ${partition}`);
-
     if (!message.value) {
       return;
     }
 
     const { userId } = JSON.parse(message.value.toString());
 
-    const podList = await redisReplicas.smembers(`userPods:${userId}`);
+    const podNumbers = await redisReplicas.smembers(`userPodNums:${userId}`);
 
-    if (podList.length) {
-      podList.forEach(async (pod) => {
-        console.log(`sending notification for user: ${userId} to pod: ${pod}`);
-
+    if (podNumbers.length) {
+      podNumbers.forEach(async (podNum) => {
         await producer.send({
-          topic: `notification-${pod}`,
-          messages: [message],
+          topic: `notification-partitioned`,
+          messages: [
+            {
+              value: message.value,
+              partition: Number(podNum),
+            },
+          ],
         });
       });
     } else {
-      // TODO: how to handle such cases? We can't just ignore the message
-      // --> send it to some general topic which will be picked up after user connects / store it in Redis?
+      // in this POC implementation, we can just ignore the message
       console.log(`User ${userId} is not yet connected on a WS server`);
     }
   },
