@@ -1,16 +1,17 @@
+import { sleep } from 'k6';
 import { WebSocket } from 'k6/experimental/websockets';
 
-// export let options = {
-//   stages: [
-//     { duration: '1m', target: 5 }, // Ramp-up to 500 connections
-//     { duration: '3m', target: 10 }, // Hold at 1000 connections
-//     { duration: '1m', target: 0 }, // Ramp-down to 0
-//   ],
-// };
+const port = '65288';
+const USERS_COUNT = 10_000;
+const minutes = 9.9;
 
-const port = '56919';
-
-const minutes = 10;
+export let options = {
+  stages: [
+    { duration: '2m', target: USERS_COUNT }, // Ramp-up to 300 virtual users
+    { duration: '6m', target: USERS_COUNT }, // Hold at 1000 virtual users
+    { duration: '2m', target: 0 }, // Ramp-down to 0 virtual users
+  ],
+};
 
 const getMiliSeconds = (minutes) => minutes * 60 * 1000;
 
@@ -32,19 +33,23 @@ const startWebSocket = (userId) => {
     console.log(data);
   });
 
+  return ws;
+
   // Set a timeout to automatically close the WebSocket after a period
-  setTimeout(() => {
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.close();
-      console.log(
-        `WebSocket connection timed out and closed for userId: ${userId}`
-      );
-    }
-  }, getMiliSeconds(minutes)); // closes connection after 10 seconds
+  // setTimeout(() => {
+  //   console.log('3000 milisecons passed');
+  //   console.log(ws.readyState);
+
+  //   if (ws.readyState === 1) {
+  //     ws.close();
+  //     console.log(
+  //       `WebSocket connection timed out and closed for userId: ${userId}`
+  //     );
+  //   }
+  // }, getMiliSeconds(minutes));
 };
 
 export default function () {
-  for (let i = 0; i < 10; i++) {
-    startWebSocket(`user${i}`);
-  }
+  const userId = `user${__VU - 1}`; // Adjust __VU to start from 0
+  const ws1 = startWebSocket(userId);
 }
