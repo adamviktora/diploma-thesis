@@ -5,7 +5,11 @@ import {
   POD_NAME,
   POD_NUMBER,
 } from './kafkaSetup.js';
-import { redisMaster } from './redisSetup.js';
+import { deleteAllRedisKeys, redisMaster } from './redisSetup.js';
+
+if (POD_NUMBER === 0) {
+  await deleteAllRedisKeys();
+}
 
 const wss = new WebSocketServer({ port: 3000 });
 const wsConnections = new Map<string, Set<WebSocket>>();

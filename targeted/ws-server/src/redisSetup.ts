@@ -5,3 +5,13 @@ export const redisMaster = new Redis({
   port: 6379,
   password: process.env.REDIS_PASSWORD,
 });
+
+export const getRedisKeys = async () => await redisMaster.keys('*');
+
+export const deleteAllRedisKeys = async () => {
+  const keys = await getRedisKeys();
+  console.log("Redis keys:")
+  if (keys.length) {
+    redisMaster.del(...keys);
+  }
+};
