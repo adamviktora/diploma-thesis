@@ -28,11 +28,10 @@ wss.on('connection', (socket) => {
         wsConnections.set(userId, new Set([socket]));
       }
 
-      socket.send(
-        `User ${userId} succesfully connected on the WS server, pod name: "${POD_NAME}"`
-      );
-
-      console.log(`users connected: ${Array.from(wsConnections.keys())}`);
+      const connectionSuccessMessage = `--> User ${userId} succesfully connected on the WS server, pod name: "${POD_NAME}"`;
+      socket.send(connectionSuccessMessage);
+      console.log(connectionSuccessMessage);
+      console.log(`# Number of users connected: ${wsConnections.size}`);
 
       await redisMaster.sadd(`userPodNums:${userId}`, POD_NUMBER);
     }
@@ -42,7 +41,7 @@ wss.on('connection', (socket) => {
     for (const [userId, sockets] of wsConnections.entries()) {
       if (sockets.has(socket)) {
         sockets.delete(socket);
-        console.log(`User ${userId} disconnected from the WS server`);
+        console.log(`--x User ${userId} disconnected from the WS server`);
 
         if (sockets.size === 0) {
           wsConnections.delete(userId);
@@ -65,16 +64,12 @@ const consumer = kafka.consumer({
 await consumer.connect();
 await consumer.subscribe({
   topic: `notification-partitioned`,
-  fromBeginning: true,
+  fromBeginning: false,
 });
-
-const data = await consumer.describeGroup();
-console.log('CONSUMER-GROUP');
-console.log(data);
 
 await consumer.run({
   eachMessage: async ({ topic, partition, message: kafkaMessage }) => {
-    console.log(`topic: ${topic}, partition: ${partition}`);
+    //console.log(`topic: ${topic}, partition: ${partition}`);
 
     const kafkaMessageValue = kafkaMessage.value?.toString();
     if (!kafkaMessageValue) {
@@ -84,15 +79,16 @@ await consumer.run({
 
     const { userId, message } = JSON.parse(kafkaMessageValue);
 
-    console.log(`Received notification for user ${userId}`);
+    console.log(`==> Received notification for user ${userId}`);
 
     const userWebsockets = wsConnections.get(userId);
 
     if (!userWebsockets || userWebsockets.size === 0) {
       console.log(
-        `No WebSocket connection found on ${POD_NAME} for user ${userId}`
+        `✗ No WebSocket connection found on ${POD_NAME} for user ${userId}`
       );
     } else {
+      console.log(`✓ Sending notification for user ${userId}`);
       userWebsockets.forEach((ws) => ws.send(message));
     }
   },

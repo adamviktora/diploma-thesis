@@ -1,6 +1,5 @@
+import { USERS_COUNT } from './constants.js';
 import { pickRandom } from './utils.js';
-
-export const USERS_COUNT = 1000;
 
 const userIdList = [...Array(USERS_COUNT).keys()].map((i) => `user${i}`);
 const messages = [
@@ -16,3 +15,4 @@ export const createNotification = () => {
 
   return { userId, message };
 };
+export { USERS_COUNT };

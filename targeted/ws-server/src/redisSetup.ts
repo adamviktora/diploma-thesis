@@ -10,7 +10,6 @@ export const getRedisKeys = async () => await redisMaster.keys('*');
 
 export const deleteAllRedisKeys = async () => {
   const keys = await getRedisKeys();
-  console.log("Redis keys:")
   if (keys.length) {
     redisMaster.del(...keys);
   }

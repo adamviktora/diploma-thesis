@@ -1,25 +1,21 @@
-import { ITopicConfig, Kafka } from 'kafkajs';
+import { Admin, ITopicConfig } from 'kafkajs';
 
-export const printTopicInfo = async (kafka: Kafka, topicName: string) => {
-  const admin = kafka.admin();
-  await admin.connect();
-
+export const printTopicInfo = async (admin: Admin, topicName: string) => {
   const metadata = await admin.fetchTopicMetadata({ topics: [topicName] });
 
   console.log(metadata);
   console.log(metadata.topics[0].partitions);
-
-  await admin.disconnect();
 };
 
-export const createTopic = async (kafka: Kafka, topicName: string) => {
-  const admin = kafka.admin();
-  await admin.connect();
-
+export const createTopic = async (
+  admin: Admin,
+  topicName: string,
+  partitionsCount: number
+) => {
   const topicsToCreate: ITopicConfig[] = [
     {
       topic: topicName,
-      numPartitions: 3,
+      numPartitions: partitionsCount,
       replicationFactor: 1,
     },
   ];
@@ -33,15 +29,4 @@ export const createTopic = async (kafka: Kafka, topicName: string) => {
   } else {
     console.log(`Topic ${topicName} already exists`);
   }
-
-  await admin.disconnect();
-};
-
-export const printTopicsList = async (kafka: Kafka) => {
-  const admin = kafka.admin();
-  await admin.connect();
-
-  console.log(await admin.listTopics());
-
-  await admin.disconnect();
 };

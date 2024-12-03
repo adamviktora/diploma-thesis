@@ -10,10 +10,6 @@ const producer = kafka.producer({
 });
 await producer.connect();
 
-const data = await consumer.describeGroup();
-console.log('COSNUMER-GROUP');
-console.log(data);
-
 await consumer.run({
   eachMessage: async ({ topic, partition, message }) => {
     if (!message.value) {
@@ -26,6 +22,10 @@ await consumer.run({
 
     if (podNumbers.length) {
       podNumbers.forEach(async (podNum) => {
+        console.log(
+          `✓ Publishing a notification for ${userId} on partition ${podNum}`
+        );
+
         await producer.send({
           topic: `notification-partitioned`,
           messages: [
@@ -38,7 +38,7 @@ await consumer.run({
       });
     } else {
       // in this POC implementation, we can just ignore the message
-      console.log(`User ${userId} is not yet connected on a WS server`);
+      console.log(`✗ User ${userId} is not yet connected on a WS server`);
     }
   },
 });

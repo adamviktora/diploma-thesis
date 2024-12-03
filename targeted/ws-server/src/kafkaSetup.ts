@@ -11,7 +11,7 @@ export const kafka = new Kafka({
   brokers: ['kafka.default.svc.cluster.local:9092'],
   ssl: false,
   sasl: {
-    mechanism: 'scram-sha-256',
+    mechanism: 'plain',
     username: kafkaUsername,
     password: kafkaPassword,
   },
