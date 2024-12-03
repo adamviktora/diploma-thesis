@@ -20,14 +20,16 @@ await producer.connect();
 const admin = kafka.admin();
 await admin.connect();
 
-//await admin.deleteTopics({ topics: ['notification-partitioned'] });
+await admin.deleteTopics({
+  topics: ['notification', 'notification-partitioned'],
+});
 
 await createTopic(admin, 'notification', routerReplicasCount);
 await createTopic(admin, 'notification-partitioned', wsServerReplicasCount);
 
-console.log(await admin.listTopics());
-await printTopicInfo(admin, 'notification');
-await printTopicInfo(admin, 'notification-partitioned');
+// console.log(await admin.listTopics());
+// await printTopicInfo(admin, 'notification');
+// await printTopicInfo(admin, 'notification-partitioned');
 
 await admin.disconnect();
 

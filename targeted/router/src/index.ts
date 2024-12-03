@@ -6,7 +6,7 @@ await consumer.connect();
 await consumer.subscribe({ topic: 'notification', fromBeginning: true });
 
 const producer = kafka.producer({
-  allowAutoTopicCreation: true,
+  allowAutoTopicCreation: false,
 });
 await producer.connect();
 
