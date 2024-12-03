@@ -1,17 +1,7 @@
-import { WebSocket } from 'k6/experimental/websockets';
+const WebSocket = require('ws');
 
 const port = '3000';
 const USERS_COUNT = 3000;
-
-export let options = {
-  stages: [
-    { duration: '4m', target: USERS_COUNT },
-    { duration: '12m', target: USERS_COUNT },
-    { duration: '4m', target: 0 },
-  ],
-};
-
-const getMiliSeconds = (minutes) => minutes * 60 * 1000;
 
 const startWebSocket = (userId) => {
   const ws = new WebSocket(`ws://localhost:${port}`);
@@ -34,7 +24,15 @@ const startWebSocket = (userId) => {
   return ws;
 };
 
-export default function () {
-  const userId = `user${__VU - 1}`; // Adjust __VU to start from 0
-  startWebSocket(userId);
-}
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+const main = async () => {
+  for (let userNumber = 0; userNumber < USERS_COUNT; userNumber++) {
+    startWebSocket(`user${userNumber}`);
+    await sleep(5);
+  }
+};
+
+main();
