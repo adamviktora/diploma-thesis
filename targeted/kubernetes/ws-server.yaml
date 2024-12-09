@@ -16,8 +16,8 @@ spec:
         app: ws-server
     spec:
       containers:
-        - name: ws-server-container
-          image: adamviktora/ws-server:latest
+        - name: ws-server-untargeted-container
+          image: adamviktora/ws-server-untargeted:latest
           ports:
             - containerPort: 3000
           env:

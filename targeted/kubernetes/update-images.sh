@@ -5,7 +5,7 @@ parent_path=$(
 )
 cd "$parent_path"
 
-services=("router" "ws-server" "notification-producer" "kafka-helper")
+services=("ws-server-untargeted" "notification-producer" "kafka-helper")
 
 for service in "${services[@]}"; do
   echo "Building $service image"
