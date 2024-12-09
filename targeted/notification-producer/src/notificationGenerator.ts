@@ -1,3 +1,4 @@
+import { ProducerRecord } from 'kafkajs';
 import { USERS_COUNT } from './constants.js';
 import { pickRandom } from './utils.js';
 
@@ -9,10 +10,18 @@ const messages = [
   'Hey hey hey',
 ];
 
-export const createNotification = () => {
+const createNotificationValue = () => {
   const userId = pickRandom(userIdList);
   const message = pickRandom(messages);
 
   return { userId, message };
 };
-export { USERS_COUNT };
+
+export const createNotificationEvent: () => ProducerRecord = () => ({
+  topic: 'notification',
+  messages: [
+    {
+      value: JSON.stringify(createNotificationValue()),
+    },
+  ],
+});

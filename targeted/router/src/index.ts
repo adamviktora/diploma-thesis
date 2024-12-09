@@ -1,17 +1,31 @@
+import { KafkaMessage } from 'kafkajs';
 import { kafka } from './kafkaSetup.js';
 import { redisReplicas } from './redisSetup.js';
 
 const consumer = kafka.consumer({ groupId: 'router-group' });
 await consumer.connect();
-await consumer.subscribe({ topic: 'notification', fromBeginning: true });
+await consumer.subscribe({ topic: 'notification' });
 
-const producer = kafka.producer({
-  allowAutoTopicCreation: false,
-});
+const producer = kafka.producer();
 await producer.connect();
 
+const publishMessageOnPartition = async (
+  message: KafkaMessage,
+  partition: number
+) => {
+  await producer.send({
+    topic: `notification-partitioned`,
+    messages: [
+      {
+        value: message.value,
+        partition: partition,
+      },
+    ],
+  });
+};
+
 await consumer.run({
-  eachMessage: async ({ topic, partition, message }) => {
+  eachMessage: async ({ message }) => {
     if (!message.value) {
       return;
     }
@@ -25,16 +39,7 @@ await consumer.run({
         console.log(
           `✓ Publishing a notification for ${userId} on partition ${podNum}`
         );
-
-        await producer.send({
-          topic: `notification-partitioned`,
-          messages: [
-            {
-              value: message.value,
-              partition: Number(podNum),
-            },
-          ],
-        });
+        publishMessageOnPartition(message, Number(podNum));
       });
     } else {
       // in this POC implementation, we can just ignore the message
