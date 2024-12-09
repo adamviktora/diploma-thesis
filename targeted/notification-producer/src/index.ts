@@ -1,49 +1,16 @@
-import {
-  CADENCY_PER_USER_IN_SECONDS,
-  routerReplicasCount,
-  USERS_COUNT,
-  wsServerReplicasCount,
-} from './constants.js';
-import { createTopic, printTopicInfo } from './kafkaHelper.js';
+import { CADENCY_PER_USER_IN_SECONDS, USERS_COUNT } from './constants.js';
 import { kafka } from './kafkaSetup.js';
-import { createNotification } from './notificationGenerator.js';
-import { getRandomInt } from './utils.js';
+import { createNotificationEvent } from './notificationGenerator.js';
 
 const intervalInSeconds = CADENCY_PER_USER_IN_SECONDS / USERS_COUNT;
 
-const producer = kafka.producer({
-  allowAutoTopicCreation: false,
-});
-
+const producer = kafka.producer();
 await producer.connect();
 
-const admin = kafka.admin();
-await admin.connect();
+const sendNotification = async () => {
+  await producer.send(createNotificationEvent());
+};
 
-await admin.deleteTopics({
-  topics: ['notification', 'notification-partitioned'],
-});
-
-await createTopic(admin, 'notification', routerReplicasCount);
-await createTopic(admin, 'notification-partitioned', wsServerReplicasCount);
-
-// console.log(await admin.listTopics());
-// await printTopicInfo(admin, 'notification');
-// await printTopicInfo(admin, 'notification-partitioned');
-
-await admin.disconnect();
-
-setInterval(async () => {
-  await producer.send({
-    topic: 'notification',
-
-    messages: [
-      {
-        value: JSON.stringify(createNotification()),
-        partition: getRandomInt(routerReplicasCount),
-      },
-    ],
-  });
-}, intervalInSeconds * 1000);
-
-//await producer.disconnect();
+setTimeout(() => {
+  setInterval(sendNotification, intervalInSeconds * 1000);
+}, 15_000);

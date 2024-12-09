@@ -1,14 +1,12 @@
 const WebSocket = require('ws');
 
-const getRandomInt = (max) => Math.floor(Math.random() * max);
-const pickRandom = (array) => array[getRandomInt(array.length)];
-
-const ports = ['8000', '8001', '8002'];
 const USERS_COUNT = 3000;
 
+const ip = '192.168.105.4';
+const port = 30300;
+
 const startWebSocket = (userId) => {
-  const port = pickRandom(ports);
-  const ws = new WebSocket(`ws://localhost:${port}`);
+  const ws = new WebSocket(`ws://${ip}:${port}`);
 
   console.log(`userId: ${userId}`);
 
@@ -35,7 +33,7 @@ const sleep = (ms) => {
 const main = async () => {
   for (let userNumber = 0; userNumber < USERS_COUNT; userNumber++) {
     startWebSocket(`user${userNumber}`);
-    await sleep(50);
+    await sleep(20);
   }
 };
 

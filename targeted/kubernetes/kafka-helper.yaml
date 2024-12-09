@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-helper
+  labels:
+    app: kafka-helper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-helper
+  template:
+    metadata:
+      labels:
+        app: kafka-helper
+    spec:
+      containers:
+        - name: kafka-helper-container
+          image: adamviktora/kafka-helper:latest
+          ports:
+            - containerPort: 7000
+          env:
+            - name: KAFKA_USERNAME
+              value: 'user1'
+            - name: KAFKA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-user-passwords
+                  key: client-passwords
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-helper-service
+spec:
+  selector:
+    app: kafka-helper
+  ports:
+    - protocol: TCP
+      port: 7000
+      targetPort: 7000

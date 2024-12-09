@@ -1,3 +1,4 @@
 node_modules
 dist
 .vscode
+kafka-3.9.0-src/*

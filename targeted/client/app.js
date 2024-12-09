@@ -1,4 +1,7 @@
-const socket = new WebSocket('ws://localhost:8000/');
+const ip = '192.168.105.3';
+const port = '30300';
+
+const socket = new WebSocket(`ws://${ip}:${port}/`);
 
 function sendMessage(e) {
   e.preventDefault();
