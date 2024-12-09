@@ -32,11 +32,6 @@ spec:
                 secretKeyRef:
                   name: kafka-user-passwords
                   key: client-passwords
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: redis
-                  key: redis-password
 ---
 apiVersion: v1
 kind: Service

@@ -1,14 +1,13 @@
-import { kafka, PerPodPartitionAssigner, POD_NAME } from './kafkaSetup.js';
+import { kafka, POD_NAME } from './kafkaSetup.js';
 import { wsConnections } from './webSockets.js';
 
 const consumer = kafka.consumer({
-  groupId: `ws-server-notifications-consumer`,
-  partitionAssigners: [PerPodPartitionAssigner],
+  groupId: POD_NAME, // each Pod consumes the whole topic, so it must have unique groupId
 });
 
 await consumer.connect();
 await consumer.subscribe({
-  topic: `notification-partitioned`,
+  topic: `notification`,
 });
 
 export const forwardEventsToWebSockets = async () => {

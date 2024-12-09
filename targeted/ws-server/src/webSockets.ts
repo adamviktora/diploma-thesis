@@ -1,6 +1,5 @@
 import { WebSocket } from 'ws';
-import { POD_NAME, POD_NUMBER } from './kafkaSetup.js';
-import { redisMaster } from './redisSetup.js';
+import { POD_NAME } from './kafkaSetup.js';
 
 export const wsConnections = new Map<string, Set<WebSocket>>();
 
@@ -22,8 +21,6 @@ export const onWebSocketConnection = (socket: WebSocket) => {
       socket.send(connectionSuccessMessage);
       console.log(connectionSuccessMessage);
       console.log(`# Number of users connected: ${wsConnections.size}`);
-
-      await redisMaster.sadd(`userPodNums:${userId}`, POD_NUMBER);
     }
   });
 
@@ -35,7 +32,6 @@ export const onWebSocketConnection = (socket: WebSocket) => {
 
         if (sockets.size === 0) {
           wsConnections.delete(userId);
-          redisMaster.srem(`userPodNums:${userId}`, POD_NUMBER);
         } else {
           wsConnections.set(userId, sockets);
         }
