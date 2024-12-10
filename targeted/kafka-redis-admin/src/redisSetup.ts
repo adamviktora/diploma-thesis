@@ -8,6 +8,9 @@ export const redisMaster = new Redis({
 
 export const getRedisKeys = async () => await redisMaster.keys('*');
 
+export const getRedisKeyMembers = async (key: string) =>
+  await redisMaster.smembers(key);
+
 export const deleteAllRedisKeys = async () => {
   const keys = await getRedisKeys();
   if (keys.length) {

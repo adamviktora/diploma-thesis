@@ -1,4 +1,5 @@
-import { kafka, PerPodPartitionAssigner, POD_NAME } from './kafkaSetup.js';
+import { kafka, PerPodPartitionAssigner } from './kafkaSetup.js';
+import { POD_NAME } from './podMetadata.js';
 import { wsConnections } from './webSockets.js';
 
 const consumer = kafka.consumer({

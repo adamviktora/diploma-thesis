@@ -1,8 +1,8 @@
 const WebSocket = require('ws');
 
-const USERS_COUNT = 3000;
+const USERS_COUNT = 5000;
 
-const ip = '192.168.105.4';
+const ip = '192.168.105.5';
 const port = 30300;
 
 const startWebSocket = (userId) => {

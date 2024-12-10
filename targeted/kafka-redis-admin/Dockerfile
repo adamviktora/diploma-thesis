@@ -25,4 +25,4 @@ RUN npm prune --omit=dev
 CMD ["node", "dist/index.js"]
 
 # Expose the port that the application listens on.
-EXPOSE 3000
+EXPOSE 7000

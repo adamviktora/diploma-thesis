@@ -5,5 +5,3 @@ export const redisReplicas = new Redis({
   port: 6379,
   password: process.env.REDIS_PASSWORD,
 });
-
-export const getRedisKeys = async () => await redisReplicas.keys('*');

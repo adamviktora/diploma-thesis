@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
-import { POD_NAME, POD_NUMBER } from './kafkaSetup.js';
-import { redisMaster } from './redisSetup.js';
+import { POD_NAME } from './podMetadata.js';
+import { addUserPodConnection, removeUserPodConnection } from './redis.js';
 
 export const wsConnections = new Map<string, Set<WebSocket>>();
 
@@ -9,7 +9,7 @@ export const onWebSocketConnection = (socket: WebSocket) => {
     const incomingObject = JSON.parse(message.toString());
 
     if (incomingObject.type === 'USER_CONNECTION') {
-      const userId = incomingObject.userId;
+      const userId: string = incomingObject.userId;
 
       if (wsConnections.has(userId)) {
         const sockets = wsConnections.get(userId);
@@ -23,7 +23,7 @@ export const onWebSocketConnection = (socket: WebSocket) => {
       console.log(connectionSuccessMessage);
       console.log(`# Number of users connected: ${wsConnections.size}`);
 
-      await redisMaster.sadd(`userPodNums:${userId}`, POD_NUMBER);
+      await addUserPodConnection(userId);
     }
   });
 
@@ -35,7 +35,7 @@ export const onWebSocketConnection = (socket: WebSocket) => {
 
         if (sockets.size === 0) {
           wsConnections.delete(userId);
-          redisMaster.srem(`userPodNums:${userId}`, POD_NUMBER);
+          await removeUserPodConnection(userId);
         } else {
           wsConnections.set(userId, sockets);
         }

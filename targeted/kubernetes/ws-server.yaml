@@ -37,6 +37,10 @@ spec:
                 secretKeyRef:
                   name: redis
                   key: redis-password
+          lifecycle:
+            preStop:
+              exec:
+                command: ['node', '/usr/src/app/dist/cleanup.js']
 ---
 apiVersion: v1
 kind: Service
