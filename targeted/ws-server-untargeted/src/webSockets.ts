@@ -1,5 +1,5 @@
 import { WebSocket } from 'ws';
-import { POD_NAME } from './podMetadata';
+import { POD_NAME } from './podMetadata.js';
 
 export const wsConnections = new Map<string, Set<WebSocket>>();
 
