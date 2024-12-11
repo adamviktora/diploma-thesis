@@ -11,8 +11,8 @@ const kafkaBrokers = [...Array(kafkaBrokersCount).keys()].map(
 );
 
 export const kafka = new Kafka({
-  clientId: 'producer',
-  brokers: [kafkaBrokers[0]],
+  clientId: 'admin',
+  brokers: kafkaBrokers,
   ssl: false,
   sasl: {
     mechanism: 'plain',
