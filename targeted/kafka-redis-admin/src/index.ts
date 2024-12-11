@@ -1,6 +1,4 @@
 import express from 'express';
-import { routerReplicasCount, wsServerReplicasCount } from './constants.js';
-import { createTopic, getAllTopicsInfo } from './kafkaHelper.js';
 import { kafka } from './kafkaSetup.js';
 import {
   deleteAllRedisKeys,
@@ -10,23 +8,44 @@ import {
 
 const app = express();
 const port = 7000;
+app.use(express.json());
 
 const admin = kafka.admin();
 await admin.connect();
 
-// await admin.deleteTopics({
-//   topics: ['notification', 'notification-partitioned'],
-// });
-
-// await printAllTopicsInfo(admin);
-
-// await createTopic(admin, 'notification', routerReplicasCount);
-// await createTopic(admin, 'notification-partitioned', wsServerReplicasCount);
-
 app.get('/topics', async (_req, res) => {
   try {
-    const topicsInfo = await getAllTopicsInfo(admin);
-    res.status(200).json({ topics: topicsInfo });
+    const topicMetadata = await admin.fetchTopicMetadata();
+    res.status(200).json(topicMetadata);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch topics' });
+  }
+});
+
+app.post('/topics', async (req, res) => {
+  try {
+    console.log(req.body);
+    const { topic, numPartitions, replicationFactor } = req.body;
+
+    const created = await admin.createTopics({
+      topics: [{ topic, numPartitions, replicationFactor }],
+    });
+
+    if (created) {
+      res.status(200).send(`Topic ${topic} created`);
+    } else {
+      res.status(500).json({ error: 'Failed to create topic' });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
+app.delete('/topics/:topic', async (req, res) => {
+  try {
+    const topic = req.params.topic;
+    await admin.deleteTopics({ topics: [topic] });
+    res.status(200).send(`Topic ${topic} deleted`);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch topics' });
   }

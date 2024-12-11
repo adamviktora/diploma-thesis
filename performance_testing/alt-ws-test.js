@@ -1,8 +1,9 @@
+const { execSync } = require('child_process');
 const WebSocket = require('ws');
 
-const USERS_COUNT = 3000;
+const USERS_COUNT = 4000;
 
-const ip = '192.168.105.4';
+const ip = execSync('minikube ip').toString().trim();
 const port = 30300;
 
 const startWebSocket = (userId) => {
