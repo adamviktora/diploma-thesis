@@ -4,9 +4,16 @@ import { POD_NUMBER } from './podMetadata.js';
 const kafkaUsername = process.env.KAFKA_USERNAME ?? 'local_kafka_username';
 const kafkaPassword = process.env.KAFKA_PASSWORD ?? 'local_kafka_password';
 
+const kafkaBrokersCount = 3;
+
+const kafkaBrokers = [...Array(kafkaBrokersCount).keys()].map(
+  (number) =>
+    `kafka-controller-${number}.kafka-controller-headless.default.svc.cluster.local:9092`
+);
+
 export const kafka = new Kafka({
   clientId: `${POD_NUMBER}`, // necessary for PerPodPartitionAssigner to work
-  brokers: ['kafka.default.svc.cluster.local:9092'],
+  brokers: kafkaBrokers,
   ssl: false,
   sasl: {
     mechanism: 'plain',

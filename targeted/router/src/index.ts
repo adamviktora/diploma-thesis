@@ -1,10 +1,14 @@
 import { KafkaMessage } from 'kafkajs';
-import { kafka } from './kafkaSetup.js';
+import {
+  kafka,
+  NOTIFICATION_TARGETED_TOPIC_NAME,
+  NOTIFICATION_TOPIC_NAME,
+} from './kafkaSetup.js';
 import { redisReplicas } from './redisSetup.js';
 
 const consumer = kafka.consumer({ groupId: 'router-group' });
 await consumer.connect();
-await consumer.subscribe({ topic: 'notification' });
+await consumer.subscribe({ topic: NOTIFICATION_TOPIC_NAME });
 
 const producer = kafka.producer();
 await producer.connect();
@@ -14,7 +18,7 @@ const publishMessageOnPartition = async (
   partition: number
 ) => {
   await producer.send({
-    topic: `notification-partitioned`,
+    topic: NOTIFICATION_TARGETED_TOPIC_NAME,
     messages: [
       {
         value: message.value,
@@ -42,8 +46,7 @@ await consumer.run({
         publishMessageOnPartition(message, Number(podNum));
       });
     } else {
-      // in this POC implementation, we can just ignore the message
-      console.log(`✗ User ${userId} is not yet connected on a WS server`);
+      console.log(`✗ User ${userId} is not connected on any WS server`);
     }
   },
 });
