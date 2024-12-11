@@ -3,11 +3,16 @@ import { Kafka } from 'kafkajs';
 const kafkaUsername = process.env.KAFKA_USERNAME ?? 'local_kafka_username';
 const kafkaPassword = process.env.KAFKA_PASSWORD ?? 'local_kafka_password';
 
-export const POD_NAME = process.env.POD_NAME ?? 'local_pod_name';
+const kafkaBrokersCount = 3;
+
+const kafkaBrokers = [...Array(kafkaBrokersCount).keys()].map(
+  (number) =>
+    `kafka-controller-${number}.kafka-controller-headless.default.svc.cluster.local:9092`
+);
 
 export const kafka = new Kafka({
   clientId: `consumer`,
-  brokers: ['kafka.default.svc.cluster.local:9092'],
+  brokers: kafkaBrokers,
   ssl: false,
   sasl: {
     mechanism: 'plain',

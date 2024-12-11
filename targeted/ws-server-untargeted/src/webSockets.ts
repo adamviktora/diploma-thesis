@@ -1,5 +1,5 @@
 import { WebSocket } from 'ws';
-import { POD_NAME } from './kafkaSetup.js';
+import { POD_NAME } from './podMetadata';
 
 export const wsConnections = new Map<string, Set<WebSocket>>();
 

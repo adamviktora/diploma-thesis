@@ -1,5 +1,8 @@
-import { kafka, POD_NAME } from './kafkaSetup.js';
+import { kafka } from './kafkaSetup.js';
+import { POD_NAME } from './podMetadata.js';
 import { wsConnections } from './webSockets.js';
+
+const NOTIFICATION_TOPIC_NAME = 'notification';
 
 const consumer = kafka.consumer({
   groupId: POD_NAME, // each Pod consumes the whole topic, so it must have unique groupId
@@ -7,7 +10,7 @@ const consumer = kafka.consumer({
 
 await consumer.connect();
 await consumer.subscribe({
-  topic: `notification`,
+  topic: NOTIFICATION_TOPIC_NAME,
 });
 
 export const forwardEventsToWebSockets = async () => {
