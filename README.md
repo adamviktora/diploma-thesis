@@ -1,4 +1,6 @@
-# Diploma Thesis
+# Master's Thesis - Targeted routing for Kafka pipelines
+
+### Author: Adam Viktora
 
 This is a prototype for running the targeted approach of routing Kafka events to ws-server pods.
 
@@ -60,3 +62,10 @@ Also `/kafka-redis-admin/createTopics.sh` "topic": "notification-targeted", "num
    - state of the pods and services can be checked with `kubectl get all`
 5. `cd` to `performance-testing`
    - run `npm install` and `node ws-test.js` to connect USERS_COUNT users to WebSockets (USERS_COUNT is configurable in the script)
+
+## Observe metrics in Grafana
+
+1. Run `kc port-forward service/monitoring-grafana 9000:80 -n monitoring`
+2. Grafana is accessible through browser at `localhost:9000`
+   - login: `admin`, password: `prom-operator`
+3. Load dashboard from `performance-testing/grafana/custom-dashboard.json`
