@@ -20,6 +20,3 @@ export const kafka = new Kafka({
     password: kafkaPassword,
   },
 });
-
-export const NOTIFICATION_TOPIC_NAME = 'notification';
-export const NOTIFICATION_TARGETED_TOPIC_NAME = 'notification-targeted';

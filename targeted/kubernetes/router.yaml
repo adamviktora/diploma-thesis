@@ -30,3 +30,7 @@ spec:
                 secretKeyRef:
                   name: redis
                   key: redis-password
+            - name: WS_PODS_COUNT
+              value: '3'
+            - name: PARTITION_COUNT_NOTIFICATION_TARGETED
+              value: '3'
