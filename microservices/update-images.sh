@@ -9,6 +9,6 @@ services=("router" "ws-server" "notification-producer" "kafka-redis-admin")
 
 for service in "${services[@]}"; do
   echo "Building $service image"
-  docker build -t "adamviktora/$service" "../$service"
+  docker build -t "adamviktora/$service" "./$service"
   docker push "adamviktora/$service"
 done

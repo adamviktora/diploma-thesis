@@ -1,5 +1,5 @@
 const { execSync } = require('child_process');
-const WebSocket = require('ws');
+const WebSocket = require('./node_modules/ws');
 
 const USERS_COUNT = 10_000;
 
