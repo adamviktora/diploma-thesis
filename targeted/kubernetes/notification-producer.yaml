@@ -26,6 +26,6 @@ spec:
                   name: kafka-user-passwords
                   key: client-passwords
             - name: USERS_COUNT
-              value: '4000'
+              value: '10000'
             - name: CADENCY_PER_USER_IN_SECONDS
-              value: '300'
+              value: '1200'
