@@ -21,19 +21,22 @@ export const forwardEventsToWebSockets = async () => {
         return;
       }
 
-      const { userId, message } = JSON.parse(kafkaMessage.value.toString());
+      const { data } = JSON.parse(kafkaMessage.value.toString());
+      const { usernames } = data;
 
-      console.log(`==> Received notification for user ${userId}`);
+      console.log(`==> Received notification for users ${usernames}`);
 
-      const userWebsockets = wsConnections.get(userId);
+      for (const userId of usernames) {
+        const userWebsockets = wsConnections.get(userId);
 
-      if (!userWebsockets || userWebsockets.size === 0) {
-        console.log(
-          `✗ No WebSocket connection found on ${POD_NAME} for user ${userId}`
-        );
-      } else {
-        console.log(`✓ Sending notification for user ${userId}`);
-        userWebsockets.forEach((ws) => ws.send(message));
+        if (!userWebsockets || userWebsockets.size === 0) {
+          console.log(
+            `✗ No WebSocket connection found on ${POD_NAME} for user ${userId}`
+          );
+        } else {
+          console.log(`✓ Sending notification for user ${userId}`);
+          userWebsockets.forEach((ws) => ws.send(JSON.stringify(data.payload)));
+        }
       }
     },
   });
