@@ -1,7 +1,7 @@
 import {
   PARTITION_COUNT_NOTIFICATION_TARGETED,
   WS_PODS_COUNT,
-} from './constants';
+} from './constants.js';
 
 const getRandomInt = (max: number) => Math.floor(Math.random() * max);
 const pickRandom = <T>(array: T[]) => array[getRandomInt(array.length)];

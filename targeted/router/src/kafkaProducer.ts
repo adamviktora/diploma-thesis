@@ -4,7 +4,7 @@ import {
   NOTIFICATION_TARGETED_TOPIC_NAME,
 } from './constants.js';
 import { kafka } from './kafkaSetup.js';
-import { pickPartition } from './utils.js';
+import { pickPartition } from './partitions.js';
 
 const producer = kafka.producer({
   allowAutoTopicCreation: false,
