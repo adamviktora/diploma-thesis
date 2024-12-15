@@ -25,6 +25,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: PODS_COUNT
+              value: '3'
+            - name: PARTITION_COUNT_NOTIFICATION_TARGETED
+              value: '3'
             - name: KAFKA_USERNAME
               value: 'user1'
             - name: KAFKA_PASSWORD

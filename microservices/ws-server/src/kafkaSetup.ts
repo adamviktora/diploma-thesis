@@ -1,5 +1,5 @@
 import { Kafka, PartitionAssigner, AssignerProtocol } from 'kafkajs';
-import { POD_NUMBER } from './podMetadata.js';
+import { POD_NUMBER, PODS_COUNT } from './podMetadata.js';
 
 const kafkaUsername = process.env.KAFKA_USERNAME ?? 'local_kafka_username';
 const kafkaPassword = process.env.KAFKA_PASSWORD ?? 'local_kafka_password';
@@ -22,6 +22,12 @@ export const kafka = new Kafka({
   },
 });
 
+const PARTITION_COUNT_NOTIFICATION_TARGETED = Number(
+  process.env.PARTITION_COUNT_NOTIFICATION_TARGETED ?? 3
+);
+
+const partitions = [...Array(PARTITION_COUNT_NOTIFICATION_TARGETED).keys()];
+
 export const PerPodPartitionAssigner: PartitionAssigner = ({ cluster }) => ({
   name: 'PerPodPartitionAssigner',
   version: 1,
@@ -33,11 +39,15 @@ export const PerPodPartitionAssigner: PartitionAssigner = ({ cluster }) => ({
       const memberId = member.memberId;
 
       // memberId starts with Kafka clientId: (clientId)_(rest-of-the-member-id)
-      const memberPartition = Number(memberId[0]);
+      const podNum = Number(memberId[0]);
+      const assignedPartitions = partitions.filter(
+        (p) => p % PODS_COUNT === podNum
+      );
+
       const topic = topics[0];
 
       assignment[memberId] = {
-        [topic]: [memberPartition],
+        [topic]: assignedPartitions,
       };
     });
 

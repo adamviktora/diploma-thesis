@@ -9,6 +9,7 @@ export const onWebSocketConnection = (socket: WebSocket) => {
     const incomingObject = JSON.parse(message.toString());
 
     if (incomingObject.type === 'USER_CONNECTION') {
+      // for the sake of this thesis, only userId (username) will be stored
       const userId: string = incomingObject.userId;
 
       if (wsConnections.has(userId)) {
