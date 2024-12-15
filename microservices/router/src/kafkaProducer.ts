@@ -15,12 +15,17 @@ export const publishMessageOnPartition = async (
   message: KafkaMessage,
   podNum: number
 ) => {
+  const partition = pickPartition(podNum);
+  console.log(
+    `✓ Publishing a notification on partition ${partition} to be consumed by pod ${podNum}`
+  );
+
   await producer.send({
     topic: NOTIFICATION_TARGETED_TOPIC_NAME,
     messages: [
       {
         value: message.value,
-        partition: pickPartition(podNum),
+        partition: partition,
       },
     ],
   });

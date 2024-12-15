@@ -48,9 +48,6 @@ await consumer.run({
 
     if (allPodNumbers.size) {
       allPodNumbers.forEach(async (podNum) => {
-        console.log(
-          `✓ Publishing a notification for ${usernames} to be consumed by pod ${podNum}`
-        );
         publishMessageOnPartition(message, Number(podNum));
       });
     } else {
