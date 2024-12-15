@@ -3,6 +3,7 @@
 ### Author: Adam Viktora
 
 This is a prototype for running the targeted approach of routing Kafka events to ws-server pods.
+The "untargeted" branch is a prototype for the untargeted approach.
 
 ### Requirements
 
