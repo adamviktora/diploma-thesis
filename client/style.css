@@ -1,0 +1,25 @@
+* {
+  font-size: 1.5rem;
+}
+
+body {
+  padding: 1rem;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+ul {
+  display: flex;
+  flex-flow: column;
+  justify-content: left;
+}
+
+input,
+button {
+  border-radius: 10px;
+  padding: 10px;
+}

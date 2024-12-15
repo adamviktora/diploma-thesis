@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-redis-admin
+  labels:
+    app: kafka-redis-admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-redis-admin
+  template:
+    metadata:
+      labels:
+        app: kafka-redis-admin
+    spec:
+      containers:
+        - name: kafka-redis-admin-container
+          image: adamviktora/kafka-redis-admin:latest
+          ports:
+            - containerPort: 7000
+          env:
+            - name: KAFKA_USERNAME
+              value: 'user1'
+            - name: KAFKA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-user-passwords
+                  key: client-passwords
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis
+                  key: redis-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-redis-admin-service
+spec:
+  type: NodePort
+  selector:
+    app: kafka-redis-admin
+  ports:
+    - protocol: TCP
+      port: 7000
+      targetPort: 7000
+      nodePort: 30700
