@@ -28,12 +28,13 @@ This is a prototype for running the targeted approach of routing Kafka events to
 - `/performance-testing`
   - `/grafana` - custom dashboard showing CPU, memory and network metrics
   - `ws-test.js` - script simulating WS connections of thousands users
+- `schema.svg` - schema of the microservices in the cluster
 
 ## Setup before running
 
-Make sure that `ws-server.yaml` spec.replicas number (3) matches `router.yaml` env variable `WS_PODS_COUNT` value: '3'.
+Make sure that `ws-server.yaml` spec.replicas number (3) matches the `PODS_COUNT` env variable value and the `router.yaml` env variable `WS_PODS_COUNT` value: '3'.
 
-Also `/kafka-redis-admin/createTopics.sh` "topic": "notification-targeted", "numPartitions": `3` <-- This number must be `>= WS_PODS_COUNT`
+Also `/kafka-redis-admin/createTopics.sh` "topic": "notification-targeted", "numPartitions": `3` <-- This number must be `>= WS_PODS_COUNT` and it is the same number as `PARTITION_COUNT_NOTIFICATION_TARGETED` env variable in `ws-server.yaml` and `router.yaml`
 
 ## How to run
 
