@@ -20,11 +20,12 @@ await consumer.run({
     }
 
     const { data } = JSON.parse(message.value.toString());
-    const { usernames, organizations } = data;
+    const { usernames, organizations, roles } = data;
     console.log(usernames);
 
     // organizations consist of a large number of users, there is a very little chance that the users in them are not connected to all ws-server pods
-    if (organizations && organizations.length) {
+    // roles are not that large, but the computational overhead would still be high
+    if ((organizations && organizations.length) || (roles && roles.length)) {
       publishMessageOnGeneralTopic(message);
       return;
     }
@@ -38,7 +39,8 @@ await consumer.run({
         allPodNumbers.add(podNumber);
       }
 
-      if (allPodNumbers.size === WS_PODS_COUNT) {
+      // if the number of pods, which would consume this message is more than half (for odd numbers half + 1) of all the pods, simply publish on the general topic
+      if (allPodNumbers.size > (WS_PODS_COUNT + 1) / 2) {
         publishMessageOnGeneralTopic(message);
         return;
       }
